@@ -35,3 +35,6 @@ Here's the math :)
 <img width="774" height="756" alt="Screenshot 2026-04-18 234411" src="https://github.com/user-attachments/assets/364c65be-94ca-4546-950d-ba30b1498be3" />
 
 Usually the Negamax algorithm is used for simplicity. This means that the evaluation of a position is equivalent to the negation of the evaluation from the opponent's viewpoint. This is because of the zero-sum property of chess: one side's win is the other side's loss.
+
+<img width="636" height="448" alt="Screenshot 2026-04-18 225048" src="https://github.com/user-attachments/assets/e9b6f577-dab6-4147-9eaf-f0e57752e58f" />
+Here's some gameplay of ThePythonChess.py :)

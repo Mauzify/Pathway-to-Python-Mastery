@@ -41,3 +41,6 @@ Here's some gameplay of ThePythonChess.py :) (OLD - ARCHIVED)
 
 https://github.com/user-attachments/assets/8567ada8-2c26-4198-a188-2962682c0cd5
 (Video Example, Updated 4/19/2026 - 11:18 AM CST)
+
+(GIF Example, Updated 4/19/2026 - 11:21 AM CST)
+<img width="3840" height="2160" alt="2026-04-19 11-16-10" src="https://github.com/user-attachments/assets/ff151f58-b800-4848-b28e-74d10e569b84" />

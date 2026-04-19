@@ -1,23 +1,26 @@
-# Developed by Mauzify - 2026
-# Magnus mode isn't literal "Magnus mode", this is a python script, not a trillion dollar supercomputer. Can only see 4 moves in the future, not 70,000,000 like in C++. 
-# (With the same CPU) - using minimax we can see 4+ in the future, also allowing python to use a good chunk of recursion limits (hense 5000.)
-
 import os
 import time
 import secrets
 import random
 import ctypes
 import sys
-sys.setrecursionlimit(5000)
+sys.setrecursionlimit(6000)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if os.name == "nt":
+    import ctypes
     kernel32 = ctypes.windll.kernel32
-    kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
-#EOL
+    std_handle = kernel32.GetStdHandle(-11)
+    mode = ctypes.c_uint()
+    kernel32.GetConsoleMode(std_handle, ctypes.byref(mode))
+    kernel32.SetConsoleMode(std_handle, mode.value | 0x0004)
 ############################################################################
 GREEN = "\033[92m" 
+BLUE = "\033[34m"
+DARKBLUE = "\033[1;34m"
 CYAN = "\033[96m" 
 RED = "\033[91m" 
+REDBACKGROUND = "\033[41m"
+YELLOW = "\033[33m"
 RESET = "\033[0m" 
 BOLD = "\033[1m" 
 ############################################################################
@@ -112,18 +115,21 @@ def coord_to_alg(coords):
     return f"{column_map[coords[1]]}{8 - coords[0]}"
 ############################################################################
 def draw_board_itself(board, last_log="NO SYSTEM LOGS"):
-    print("\033[14A", end="") 
-    print(f" LOG > {CYAN}{last_log}{RESET}\033[K")
-    print(f"{BOLD}      A  B  C  D  E  F  G  H{RESET}")
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(f" LOG > {CYAN}{last_log}{RESET}")
+    print(f"{BOLD}        A      B      C      D      E      F      G      H{RESET}")
     for i, row in enumerate(board):
-        print("\033[K", end="") 
+       for _ in range(3): 
         print(f"  {8-i} |", end="")
         for j, piece in enumerate(row):
             style = WHITE_SQUARE if (i + j) % 2 == 0 else BLACK_SQUARE
-            print(f"{style} {PIECES[piece]} {RESET}", end="")
+            if _ == 1:  
+                print(f"{style}   {PIECES[piece]}   {RESET}", end="")
+            else:
+                print(f"{style}       {RESET}", end="")
         print(f"| {BOLD}{8-i}")
-    print("\033[K", end="")
-    print(f"{BOLD}      A  B  C  D  E  F  G  H{RESET}")
+    print(f"{BOLD}        A      B      C      D      E      F      G      H{RESET}")
+    print("\n")
 ############################################################################
 def is_legal_move(board, start, end, current_turn, ignore_check=False):
     sr, sc = start
@@ -285,17 +291,18 @@ if __name__ == "__main__":
     last_action = "SYSTEM INITIALIZED"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
     os.system('cls' if os.name == 'nt' else 'clear')
-    typewriter(f"    --->> Game of Chess | Written in Python 3.11.8 | 3.11 (64-Bit) <<---", bold=True)
-    typewriter(f"             --> OPPONENT: CENTRAL PROCESSING UNIT (*CPU*) <--", bold=True)
-    typewriter(f"            DEVELOPED BY: MAUZIFY >= https://github.com/Mauzify", bold=True)
+    typewriter(f"    --->> {GREEN}{BOLD}Game of Chess{RESET} | Written in {YELLOW}Python{RESET} 3.11.8 | 3.11 (64-Bit) <<---", bold=True) 
+    typewriter(f"             --> OPPONENT: {CYAN}C{RESET}{DARKBLUE}E{RESET}{CYAN}N{RESET}{DARKBLUE}T{RESET}{CYAN}R{RESET}{DARKBLUE}A{RESET}{CYAN}L{RESET} {DARKBLUE}P{RESET}{CYAN}R{RESET}{DARKBLUE}O{RESET}{CYAN}C{RESET}{DARKBLUE}E{RESET}{CYAN}S{RESET}{DARKBLUE}S{RESET}{CYAN}I{RESET}{DARKBLUE}N{RESET}{CYAN}G{RESET} {DARKBLUE}U{RESET}{CYAN}N{RESET}{DARKBLUE}I{RESET}{CYAN}T{RESET} ({RED}>{RESET}>{RED}{BOLD} | CPU | {RESET}<{RED}<{RESET}) <--", bold=True)
+    typewriter(f"            DEVELOPED BY: {RED}MAUZIFY{RESET} >= https://github.com/Mauzify", bold=True)
     typewriter(f"=" * 80 + "\n\n")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    typewriter("SELECT DIFFICULTY [1: Casual/Confident | 2: Intermediate | 3: Magnus Carlsen Mode 💀]", color=CYAN, speed=0.01)
+    typewriter(f" >> {RED}S{RESET}{YELLOW}E{RESET}{GREEN}L{RESET}{CYAN}E{RESET}{BLUE}C{RESET}{DARKBLUE}T{RESET} {RED}D{RESET}{YELLOW}I{RESET}{GREEN}F{RESET}{CYAN}F{RESET}{BLUE}I{RESET}{DARKBLUE}C{RESET}{RED}U{RESET}{YELLOW}L{RESET}{GREEN}T{RESET}{CYAN}Y{RESET} [1: {GREEN}Casual{RESET}/{GREEN}Confident{RESET} | 2: {YELLOW}Intermediate{RESET} | 3: {RED}{BOLD}Magnus Carlsen Mode{RESET} 💀]", speed=0.01)
     diff = input(" > ")
-    ai_depth = 2 if diff == "1" else (3 if diff == "2" else 4)
+    minimax_depth = 2 if diff == "1" else (3 if diff == "2" else 4)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
     os.system('cls' if os.name == 'nt' else 'clear')
-    print("\n" * 16) 
+    print("\033[H", end="") 
+    print("\n" * 27)       
 ############################################################################
     while True:
         for c in range(8):
@@ -308,7 +315,7 @@ if __name__ == "__main__":
         try:
             if current_turn == "white":
                 check_status = f"{RED}[CHECK!]{RESET} " if is_in_check(board, "white") else ""
-                typewriter(f"{check_status}SCORE: {score} | TURN: WHITE | INPUT > ", color=GREEN, end="", speed=0.005)
+                typewriter(f"{check_status}{GREEN}{BOLD}SCORE: {RESET}{score} | {CYAN}{BOLD}TURN{RESET}: {BOLD}WHITE{RESET} | INPUT > ", end="", speed=0.005)
                 raw = input().split()
                 print("\033[1A\033[K", end="") 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
@@ -327,8 +334,8 @@ if __name__ == "__main__":
                     last_action = f"{RED}FORMAT ERROR: USE 'E2 E4'{RESET}"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~               
             else:
-                typewriter("CPU IS CALCULATING...", color=CYAN, end="", speed=0.005)
-                _, cpu_move = minimax(board, ai_depth, -100000, 100000, False)
+                typewriter("CPU IS THINKING...", color=CYAN, end="", speed=0.005)
+                _, cpu_move = minimax(board, minimax_depth, -100000, 100000, False)
                 print("\033[K", end="\r") 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  
                 if cpu_move:
@@ -343,5 +350,3 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             break
 ############################################################################
-
-# shit took 3.5+ hours bruh
